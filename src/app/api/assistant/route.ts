@@ -14,7 +14,7 @@ TRUST AND ACCURACY RULES:
 - For unrelated questions, politely guide the visitor back to Ashish's work, skills, education, or experience.
 
 PROFILE:
-Ashish Kumar is pursuing a B.Tech in Computer Science and Business Systems at Rajalakshmi Institute of Technology (2022–2026).
+Ashish Kumar's education is B.Tech in Computer Science and Business Systems at Rajalakshmi Institute of Technology (2022–2026).
 
 PROJECTS:
 1. CineBook — movie booking platform built with Django. Documented features: movie and showtime management, interactive seat selection, Razorpay payments, automated refunds, QR-enabled PDF e-tickets and email delivery. Repository: https://github.com/ashishfogawat3208-oss/cinebook

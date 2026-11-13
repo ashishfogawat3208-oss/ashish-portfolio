@@ -1,4 +1,4 @@
-# Ashish Kumar — Ashish 2.0 Portfolio
+# Ashish Kumar — Professional Developer Portfolio
 
 A responsive Next.js portfolio with a dimensional CSS 3D hero, project case studies, conceptual architecture diagrams, live public GitHub repository cards, an interactive terminal, and a recruiter Q&A assistant.
 
@@ -98,3 +98,28 @@ Update `metadataBase` in `src/app/layout.tsx` to the final deployed portfolio UR
 ### Environment variables
 
 Copy `.env.example` to `.env.local` and enter your own server-side keys. Never commit `.env.local`. On Vercel, update the same variables under Project Settings → Environment Variables and redeploy.
+
+
+## Ashish 5.0 — Signature Edition
+
+- Added a dedicated `/resume` recruiter center with print / Save as PDF and a download link to the original resume PDF.
+- Added one-click profile-link copying.
+- Added sitemap and robots metadata, canonical URL support, and Person structured data.
+- Added baseline security response headers.
+- Improved contact form feedback with a message character counter and request-size validation.
+- Kept all project presentation text-first. No fabricated screenshots, videos, preview images, live demos or metrics are included.
+
+### Final deployment configuration
+
+Set these environment variables in Vercel (Production and Preview as appropriate):
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4.1-mini
+RESEND_API_KEY=your_resend_api_key
+CONTACT_FROM_EMAIL=Portfolio Contact <hello@your-verified-domain.com>
+CONTACT_TO_EMAIL=ashishfogawat3208@gmail.com
+NEXT_PUBLIC_SITE_URL=https://your-exact-vercel-domain.vercel.app
+```
+
+Replace `NEXT_PUBLIC_SITE_URL` with the exact deployed URL. If using a custom domain, use that canonical domain. Redeploy after changing environment variables. Keep `.env.local` private and never commit it.

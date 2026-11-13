@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 const links = [
-  ["Work", "#work"], ["Case studies", "#case-studies"], ["About", "#about"],
+  ["Home", "#top"], ["Work", "#work"], ["Case studies", "#case-studies"], ["About", "#about"],
   ["Skills", "#skills"], ["Experience", "#experience"], ["GitHub", "#github"],
   ["Recruiters", "#recruiter"], ["Ask me", "#assistant"], ["Contact", "#contact"],
 ];
@@ -31,14 +31,14 @@ export default function PortfolioNav() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <div className="reading-progress" aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>
       <nav className="nav" aria-label="Main navigation">
-        <a className="brand" href="#top" aria-label="Ashish Kumar home">AK<span>.</span></a>
+        <a className="brand brand-lockup" href="#top" aria-label="Ashish Kumar home"><span className="brand-mark" aria-hidden="true">✦</span><span className="brand-name">ASHISH KUMAR<span className="brand-dot">.</span></span></a>
         <button className="mobile-menu-toggle" type="button" aria-expanded={menuOpen} aria-controls="primary-navigation" onClick={() => setMenuOpen((open) => !open)}>
           <span>{menuOpen ? "CLOSE" : "MENU"}</span><i className={menuOpen ? "menu-icon open" : "menu-icon"} />
         </button>
         <div className={`nav-links${menuOpen ? " is-open" : ""}`} id="primary-navigation">
           {links.map(([label, href]) => <a href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
         </div>
-        <a className="nav-cta" href="/Ashish_Kumar_Resume_Updated.pdf" target="_blank" rel="noreferrer">Resume <span aria-hidden="true">↗</span></a>
+        <a className="nav-cta" href="/resume">Resume <span aria-hidden="true">↗</span></a>
       </nav>
     </>
   );

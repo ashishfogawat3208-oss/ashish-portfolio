@@ -21,6 +21,12 @@ type PublicEvent = {
 
 const GITHUB = "https://github.com/ashishfogawat3208-oss";
 
+const FALLBACK_REPOS: Repo[] = [
+  { name: "vibespace", html_url: "https://github.com/ashishfogawat3208-oss/vibespace", description: "Mood-based social platform with posts, feeds and profiles.", language: "JavaScript", stargazers_count: 0, forks_count: 0, updated_at: "" },
+  { name: "green-business-simulator-backend", html_url: "https://github.com/ashishfogawat3208-oss/green-business-simulator-backend", description: "Backend repository for a sustainability and business-planning tool.", language: "JavaScript", stargazers_count: 0, forks_count: 0, updated_at: "" },
+  { name: "cinebook", html_url: "https://github.com/ashishfogawat3208-oss/cinebook", description: "Django movie-booking platform with payment and ticket workflows.", language: "Python", stargazers_count: 0, forks_count: 0, updated_at: "" },
+];
+
 function eventLabel(type: string) {
   const labels: Record<string, string> = {
     PushEvent: "Pushed code to",
@@ -43,29 +49,21 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
   const [repoState, setRepoState] = useState<"loading" | "ready" | "error">("loading");
   const [command, setCommand] = useState("");
   const [history, setHistory] = useState<string[]>([
-    "ASHISH.DEV — interactive profile terminal",
-    "Session initialized. Type help to inspect available commands.",
+    "ASHISH KUMAR — INTERACTIVE PROFILE TERMINAL",
+    "Session initialized. Type help to explore the portfolio.",
   ]);
+
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!github) return;
     const controller = new AbortController();
-    const options = {
-      headers: { Accept: "application/vnd.github+json" },
-      signal: controller.signal,
-      cache: "no-store" as RequestCache,
-    };
-    Promise.all([
-      fetch("https://api.github.com/users/ashishfogawat3208-oss/repos?sort=updated&per_page=100", options),
-      fetch("https://api.github.com/users/ashishfogawat3208-oss/events/public?per_page=8", options),
-    ])
-      .then(async ([repoResponse, eventResponse]) => {
-        if (!repoResponse.ok) throw new Error("GitHub repositories are unavailable");
-        const repoData = await repoResponse.json() as Repo[];
-        const eventData = eventResponse.ok ? await eventResponse.json() as PublicEvent[] : [];
-        const featured = ["vibespace", "green-business-simulator-backend", "cinebook", "Backend"];
-        setRepos(repoData.filter((repo) => featured.includes(repo.name)));
-        setEvents(eventData.slice(0, 5));
+    fetch("/api/github", { signal: controller.signal, cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("GitHub data unavailable");
+        const data = await response.json() as { repos?: Repo[]; events?: PublicEvent[] };
+        setRepos(Array.isArray(data.repos) ? data.repos : []);
+        setEvents(Array.isArray(data.events) ? data.events.slice(0, 5) : []);
         setRepoState("ready");
       })
       .catch((error: unknown) => {
@@ -73,10 +71,10 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
         setRepoState("error");
       });
     return () => controller.abort();
-  }, [github]);
+  }, [github, refreshKey]);
 
   const commands = useMemo<Record<string, string[]>>(() => ({
-    help: ["Available commands:", "whoami      — developer profile", "about       — quick introduction", "skills      — technical toolkit", "projects    — featured work", "experience  — internship history", "education   — academic background", "resume      — open resume PDF", "github      — open GitHub profile", "contact     — jump to contact section", "email       — open email composer", "clear       — clear terminal"],
+    help: ["Available commands:", "whoami      — developer profile", "about       — quick introduction", "skills      — technical toolkit", "projects    — featured work", "experience  — internship history", "education   — academic background", "resume      — open recruiter resume center", "github      — open GitHub profile", "contact     — jump to contact section", "email       — open email composer", "clear       — clear terminal"],
     whoami: ["ashish@portfolio", "Name: Ashish Kumar", "Focus: Frontend and full-stack web development", "Location: Chennai, India"],
     about: ["Ashish Kumar", "B.Tech — Computer Science and Business Systems (2022–2026).", "Interested in building responsive interfaces and practical full-stack applications."],
     skills: ["Programming: Python · Java · JavaScript", "Frontend: React.js · AngularJS · HTML · CSS", "Backend: Node.js · Express.js · Django · REST APIs", "Data: MongoDB · MySQL · Supabase · Power BI"],
@@ -85,13 +83,14 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
     education: ["B.Tech — Computer Science and Business Systems", "Rajalakshmi Institute of Technology", "2022–2026"],
     contact: ["Email: ashishfogawat3208@gmail.com", "Phone: +91 7639203486", "Location: Chennai, India"],
     email: ["Opening your default email app…"],
-    resume: ["Opening Ashish Kumar's resume PDF…"],
+    resume: ["Opening Ashish Kumar's recruiter resume center…"],
     github: ["Opening github.com/ashishfogawat3208-oss…"],
   }), []);
 
   if (github) {
     const featuredOrder = ["vibespace", "green-business-simulator-backend", "cinebook", "Backend"];
-    const ordered = [...repos].sort((a, b) => featuredOrder.indexOf(a.name) - featuredOrder.indexOf(b.name));
+    const sourceRepos = repoState === "error" ? FALLBACK_REPOS : repos;
+    const ordered = [...sourceRepos].sort((a, b) => featuredOrder.indexOf(a.name) - featuredOrder.indexOf(b.name));
     const languageCounts = ordered.reduce<Record<string, number>>((counts, repo) => {
       if (repo.language) counts[repo.language] = (counts[repo.language] || 0) + 1;
       return counts;
@@ -100,15 +99,15 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
     return (
       <div className="github-widget">
         <div className="github-widget-head">
-          <div><span className="github-live-dot" /> PUBLIC REPOSITORIES · LIVE FROM GITHUB</div>
+          <div><span className="github-live-dot" /> PUBLIC REPOSITORIES · GITHUB SOURCE</div>
           <a href={GITHUB} target="_blank" rel="noreferrer">ashishfogawat3208-oss ↗</a>
         </div>
         {repoState === "loading" && <p className="github-state">Connecting to GitHub’s public API…</p>}
-        {repoState === "error" && <p className="github-state">Live repository details are temporarily unavailable. You can still browse the public profile.</p>}
+        {repoState === "error" && <div className="github-state github-fallback-note"><span>Live GitHub data is temporarily unavailable. Showing featured repository links so recruiters can still inspect your code.</span><button type="button" onClick={() => { setRepoState("loading"); setRefreshKey((value) => value + 1); }}>Retry live data ↻</button></div>}
         {repoState === "ready" && ordered.length === 0 && <p className="github-state">No featured public repositories were returned. Open the profile to browse all repositories.</p>}
-        {repoState === "ready" && <>
-          <div className="github-summary"><div><strong>{ordered.length.toString().padStart(2, "0")}</strong><span>FEATURED PUBLIC REPOS</span></div><div><strong>{languages.length.toString().padStart(2, "0")}</strong><span>LANGUAGES DETECTED</span></div><div><strong>{events.length.toString().padStart(2, "0")}</strong><span>RECENT PUBLIC EVENTS</span></div></div>
-          {languages.length > 0 && <div className="github-language-row"><span>LANGUAGES IN FEATURED REPOS</span><div>{languages.map(([language, count]) => <span key={language}>{language} <b>{count}</b></span>)}</div></div>}
+        {repoState !== "loading" && ordered.length > 0 && <>
+          {repoState === "ready" && <div className="github-summary"><div><strong>{ordered.length.toString().padStart(2, "0")}</strong><span>FEATURED PUBLIC REPOS</span></div><div><strong>{languages.length.toString().padStart(2, "0")}</strong><span>LANGUAGES DETECTED</span></div><div><strong>{events.length.toString().padStart(2, "0")}</strong><span>RECENT PUBLIC EVENTS</span></div></div>}
+          {languages.length > 0 && repoState === "ready" && <div className="github-language-row"><span>LANGUAGES IN FEATURED REPOS</span><div>{languages.map(([language, count]) => <span key={language}>{language} <b>{count}</b></span>)}</div></div>}
         </>}
         <div className="repo-grid">
           {ordered.map((repo) => (
@@ -116,8 +115,8 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
               <span className="repo-kicker">PUBLIC REPOSITORY</span>
               <strong>{repo.name}</strong>
               <p>{repo.description || "Public project repository by Ashish Kumar."}</p>
-              <div className="repo-meta"><span>{repo.language || "Code"}</span><span>★ {repo.stargazers_count}</span><span>⑂ {repo.forks_count}</span></div>
-              <small className="repo-updated">Updated {new Date(repo.updated_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</small>
+              <div className="repo-meta"><span>{repo.language || "Code"}</span>{repoState === "ready" && <><span>★ {repo.stargazers_count}</span><span>⑂ {repo.forks_count}</span></>}</div>
+              {repoState === "ready" && repo.updated_at && <small className="repo-updated">Updated {new Date(repo.updated_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</small>}
             </a>
           ))}
         </div>
@@ -138,7 +137,7 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
         setCommand("");
         return;
       }
-      if (normalized === "resume") window.open("/Ashish_Kumar_Resume_Updated.pdf", "_blank", "noopener,noreferrer");
+      if (normalized === "resume") window.open("/resume", "_blank", "noopener,noreferrer");
       if (normalized === "github") window.open(GITHUB, "_blank", "noopener,noreferrer");
       if (normalized === "email") window.location.href = "mailto:ashishfogawat3208@gmail.com";
       if (normalized === "contact") document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });

@@ -4,6 +4,8 @@ import RecruiterMode from "@/components/RecruiterMode";
 import ContactForm from "@/components/ContactForm";
 import PortfolioNav from "@/components/PortfolioNav";
 import SkillsExplorer from "@/components/SkillsExplorer";
+import ShareProfile from "@/components/ShareProfile";
+import RecruiterFitExplorer from "@/components/RecruiterFitExplorer";
 
 const projects = [
   {
@@ -133,15 +135,20 @@ export default function Home() {
         <div className="hero-copy">
           <div className="eyebrow"><span className="status-dot" /> OPEN TO OPPORTUNITIES</div>
           <p className="overline">HELLO, I’M ASHISH KUMAR</p>
-          <h1>I build digital<br /><span>experiences</span> that<br />make an impact.</h1>
+          <h1>Thoughtful code.<br /><span>Useful products.</span><br />Real-world thinking.</h1>
           <p className="hero-description">
-            Full-stack developer and frontend engineer focused on building responsive,
-            useful web applications — from the first idea to deployment.
+            Frontend-focused developer with hands-on experience building responsive web
+            interfaces, full-stack applications and practical product workflows.
+            I enjoy connecting clean user experiences with dependable application logic.
           </p>
+          <div className="hero-specialties" aria-label="Professional focus">
+            <span>FRONTEND ENGINEERING</span><i /> <span>FULL-STACK DEVELOPMENT</span><i /> <span>PRODUCT THINKING</span>
+          </div>
           <div className="hero-actions">
             <a className="button button-primary" href="#work">Explore my work <Arrow /></a>
             <a className="button button-quiet" href="#contact">Let’s connect <span>↓</span></a>
-            <a className="hero-resume-link" href="/Ashish_Kumar_Resume_Updated.pdf" target="_blank" rel="noreferrer">Download resume ↗</a>
+            <a className="hero-resume-link" href="/resume">Recruiter resume center ↗</a>
+            <ShareProfile />
           </div>
           <div className="hero-meta">
             <span>BASED IN CHENNAI, INDIA</span><span className="meta-line" />
@@ -257,6 +264,16 @@ export default function Home() {
 
       <RecruiterMode />
 
+      <section className="fit-section" id="fit-explorer">
+        <div className="section-wrap">
+          <div className="section-heading">
+            <div><p className="overline">A FASTER WAY TO REVIEW MY FIT</p><h2>Explore my <span>relevant evidence.</span></h2></div>
+            <p className="section-note">Select the kind of role you are hiring for. I’ll bring the most relevant projects, internships and skills together in one brief.</p>
+          </div>
+          <RecruiterFitExplorer />
+        </div>
+      </section>
+
       <section className="assistant-section" id="assistant">
         <div className="section-wrap assistant-layout">
           <div className="assistant-intro">
@@ -280,10 +297,10 @@ export default function Home() {
         <div className="section-wrap about-grid">
           <div><p className="overline">A LITTLE ABOUT ME</p><h2>Curious by nature.<br /><span>Builder by choice.</span></h2></div>
           <div className="about-copy">
-            <p className="about-lead">I’m a Computer Science and Business Systems student who enjoys turning ideas into practical digital products.</p>
-            <p>My experience spans frontend development, full-stack application building and HR operations. Through internships and personal projects, I’ve worked on responsive interfaces, backend APIs, database-driven applications and integrations such as payments, QR/PDF generation and automated email delivery.</p>
-            <p>I value clean interfaces, thoughtful user experiences and learning by building.</p>
-            <a className="text-link" href="/Ashish_Kumar_Resume_Updated.pdf" target="_blank" rel="noreferrer">View my resume <Arrow /></a>
+            <p className="about-lead">I’m Ashish Kumar — a developer with a Computer Science and Business Systems background and a practical, build-first approach to technology.</p>
+            <p>My experience spans frontend development, web design, full-stack personal projects and HR operations. I’ve worked on responsive interfaces, backend APIs, database-driven applications and integrations including payments, automated refunds, QR/PDF ticket generation and email workflows.</p>
+            <p>I’m interested in opportunities where I can contribute to useful products, keep strengthening my engineering fundamentals and work with people who care about thoughtful execution.</p>
+            <a className="text-link" href="/resume">Explore my recruiter resume <Arrow /></a>
           </div>
         </div>
       </section>
@@ -312,7 +329,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="footer"><a className="brand" href="#top">AK<span>.</span></a><p>Designed & built by Ashish Kumar</p><div className="footer-links"><a href="https://github.com/ashishfogawat3208-oss" target="_blank" rel="noreferrer">GITHUB ↗</a><a href="mailto:ashishfogawat3208@gmail.com">EMAIL ↗</a><a href="#top">BACK TO TOP ↑</a></div></footer>
+      <footer className="footer"><a className="brand footer-brand" href="#top" aria-label="Ashish Kumar home">✦ ASHISH KUMAR<span>.</span></a><p>Designed & built by <strong>Ashish Kumar</strong></p><div className="footer-links"><a href="https://github.com/ashishfogawat3208-oss" target="_blank" rel="noreferrer">GITHUB ↗</a><a href="mailto:ashishfogawat3208@gmail.com">EMAIL ↗</a><a href="#top">BACK TO TOP ↑</a></div></footer>
     </main>
   );
 }

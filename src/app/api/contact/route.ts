@@ -5,6 +5,11 @@ export const runtime = "nodejs";
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
+  const declaredLength = Number(request.headers.get("content-length") || 0);
+  if (declaredLength > 12_000) {
+    return NextResponse.json({ error: "Message is too large. Please shorten it and try again." }, { status: 413 });
+  }
+
   let body: Record<string, unknown>;
   try {
     body = await request.json();
@@ -19,7 +24,7 @@ export async function POST(request: Request) {
 
   const name = typeof body.name === "string" ? body.name.trim().slice(0, 80) : "";
   const email = typeof body.email === "string" ? body.email.trim().slice(0, 160) : "";
-  const subject = typeof body.subject === "string" ? body.subject.trim().slice(0, 120) : "";
+  const subject = typeof body.subject === "string" ? body.subject.replace(/[\r\n]+/g, " ").trim().slice(0, 120) : "";
   const message = typeof body.message === "string" ? body.message.trim().slice(0, 3000) : "";
 
   if (name.length < 2 || !emailPattern.test(email) || subject.length < 3 || message.length < 10) {

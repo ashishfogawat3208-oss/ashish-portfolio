@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 export default function ContactForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "setup">("idle");
   const [message, setMessage] = useState("");
+  const [draft, setDraft] = useState("");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,6 +29,7 @@ export default function ContactForm() {
       setStatus("success");
       setMessage("Thanks! Your message has been sent successfully.");
       form.reset();
+      setDraft("");
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Something went wrong. Please email Ashish directly.");
@@ -42,12 +44,12 @@ export default function ContactForm() {
           <label>Email address<input name="email" type="email" required maxLength={160} placeholder="you@example.com" autoComplete="email" /></label>
         </div>
         <label>Subject<input name="subject" required minLength={3} maxLength={120} placeholder="Job opportunity / collaboration" /></label>
-        <label>Message<textarea name="message" required minLength={10} maxLength={3000} rows={5} placeholder="Tell me a little about what you have in mind…" /></label>
+        <label>Message<textarea name="message" required minLength={10} maxLength={3000} rows={5} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Tell me a little about what you have in mind…" /><span className="contact-character-count">{draft.length}/3000 characters</span></label>
         <input className="contact-honeypot" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         <div className="contact-submit-row"><button className="button button-primary" type="submit" disabled={status === "sending"}>{status === "sending" ? "Sending…" : "Send message ↗"}</button><span>Or email <a href="mailto:ashishfogawat3208@gmail.com">ashishfogawat3208@gmail.com</a></span></div>
         {message && <p className={`contact-form-status ${status}`} role="status">{message} {status === "setup" && <a href="mailto:ashishfogawat3208@gmail.com">Open email ↗</a>}</p>}
       </form>
-      <p className="contact-privacy">Your details are used only to respond to your enquiry.</p>
+      <p className="contact-privacy">Your details are used only to respond to your enquiry. Please do not include passwords, payment details or other sensitive information.</p>
     </div>
   );
 }
