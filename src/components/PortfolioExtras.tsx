@@ -9,35 +9,63 @@ type Repo = {
   language: string | null;
   stargazers_count: number;
   forks_count: number;
+  updated_at: string;
 };
+
+type PublicEvent = {
+  id: string;
+  type: string;
+  repo: { name: string };
+  created_at: string;
+};
+
+const GITHUB = "https://github.com/ashishfogawat3208-oss";
+
+function eventLabel(type: string) {
+  const labels: Record<string, string> = {
+    PushEvent: "Pushed code to",
+    CreateEvent: "Created a branch or repository in",
+    PullRequestEvent: "Opened or updated a pull request in",
+    IssuesEvent: "Worked with an issue in",
+    WatchEvent: "Starred",
+    ForkEvent: "Forked",
+    ReleaseEvent: "Published a release in",
+  };
+  return labels[type] || "Activity in";
+}
 
 export default function PortfolioExtras({ github = false, terminal = false }: {
   github?: boolean;
   terminal?: boolean;
 }) {
   const [repos, setRepos] = useState<Repo[]>([]);
+  const [events, setEvents] = useState<PublicEvent[]>([]);
   const [repoState, setRepoState] = useState<"loading" | "ready" | "error">("loading");
   const [command, setCommand] = useState("");
   const [history, setHistory] = useState<string[]>([
     "ASHISH.DEV — interactive profile terminal",
-    "Type help to see available commands.",
+    "Session initialized. Type help to inspect available commands.",
   ]);
 
   useEffect(() => {
     if (!github) return;
     const controller = new AbortController();
-    fetch("https://api.github.com/users/ashishfogawat3208-oss/repos?sort=updated&per_page=100", {
+    const options = {
       headers: { Accept: "application/vnd.github+json" },
       signal: controller.signal,
-      cache: "no-store",
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("GitHub API request failed");
-        return response.json();
-      })
-      .then((data: Repo[]) => {
+      cache: "no-store" as RequestCache,
+    };
+    Promise.all([
+      fetch("https://api.github.com/users/ashishfogawat3208-oss/repos?sort=updated&per_page=100", options),
+      fetch("https://api.github.com/users/ashishfogawat3208-oss/events/public?per_page=8", options),
+    ])
+      .then(async ([repoResponse, eventResponse]) => {
+        if (!repoResponse.ok) throw new Error("GitHub repositories are unavailable");
+        const repoData = await repoResponse.json() as Repo[];
+        const eventData = eventResponse.ok ? await eventResponse.json() as PublicEvent[] : [];
         const featured = ["vibespace", "green-business-simulator-backend", "cinebook", "Backend"];
-        setRepos(data.filter((repo) => featured.includes(repo.name)));
+        setRepos(repoData.filter((repo) => featured.includes(repo.name)));
+        setEvents(eventData.slice(0, 5));
         setRepoState("ready");
       })
       .catch((error: unknown) => {
@@ -48,29 +76,40 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
   }, [github]);
 
   const commands = useMemo<Record<string, string[]>>(() => ({
-    help: ["Available commands:", "about  — quick introduction", "skills — technical toolkit", "projects — featured work", "experience — internships", "contact — get in touch", "resume — view resume", "github — open GitHub", "clear — clear terminal"],
-    about: ["Ashish Kumar", "Computer Science and Business Systems graduate (2022–2026).", "Interested in frontend and full-stack development."],
-    skills: ["Python · Java · JavaScript", "React.js · AngularJS · HTML · CSS", "Node.js · Express.js · Django · REST APIs", "MongoDB · MySQL · Supabase · Power BI"],
-    projects: ["VibeSpace — mood-based social platform", "Green Business Simulator — sustainable business planning tool", "CineBook — movie ticket booking platform", "Use the project cards above to explore case studies and source repositories."],
+    help: ["Available commands:", "whoami      — developer profile", "about       — quick introduction", "skills      — technical toolkit", "projects    — featured work", "experience  — internship history", "education   — academic background", "resume      — open resume PDF", "github      — open GitHub profile", "contact     — jump to contact section", "email       — open email composer", "clear       — clear terminal"],
+    whoami: ["ashish@portfolio", "Name: Ashish Kumar", "Focus: Frontend and full-stack web development", "Location: Chennai, India"],
+    about: ["Ashish Kumar", "B.Tech — Computer Science and Business Systems (2022–2026).", "Interested in building responsive interfaces and practical full-stack applications."],
+    skills: ["Programming: Python · Java · JavaScript", "Frontend: React.js · AngularJS · HTML · CSS", "Backend: Node.js · Express.js · Django · REST APIs", "Data: MongoDB · MySQL · Supabase · Power BI"],
+    projects: ["01  VibeSpace — mood-based social platform", "02  Green Business Simulator — sustainability planning tool", "03  CineBook — movie ticket booking platform", "Open the Work section for text-based case studies and repository links."],
     experience: ["Frontend Developer Intern — HMV Technologies (May–Jul 2025)", "Web Design Intern — IDS Infotech (Jan–Mar 2025)", "HR Recruiter Intern — CEI Design Consultancy Services (Aug 2024–Nov 2025)"],
+    education: ["B.Tech — Computer Science and Business Systems", "Rajalakshmi Institute of Technology", "2022–2026"],
     contact: ["Email: ashishfogawat3208@gmail.com", "Phone: +91 7639203486", "Location: Chennai, India"],
-    resume: ["Resume: /Ashish_Kumar_Resume_Updated.pdf", "Use the Resume link in the navigation to open it."],
-    github: ["GitHub: github.com/ashishfogawat3208-oss", "Open the GitHub section to browse public repositories."],
-    whoami: ["Ashish Kumar — Computer Science and Business Systems", "Frontend and full-stack web development interests."],
+    email: ["Opening your default email app…"],
+    resume: ["Opening Ashish Kumar's resume PDF…"],
+    github: ["Opening github.com/ashishfogawat3208-oss…"],
   }), []);
 
   if (github) {
     const featuredOrder = ["vibespace", "green-business-simulator-backend", "cinebook", "Backend"];
     const ordered = [...repos].sort((a, b) => featuredOrder.indexOf(a.name) - featuredOrder.indexOf(b.name));
+    const languageCounts = ordered.reduce<Record<string, number>>((counts, repo) => {
+      if (repo.language) counts[repo.language] = (counts[repo.language] || 0) + 1;
+      return counts;
+    }, {});
+    const languages = Object.entries(languageCounts).sort((a, b) => b[1] - a[1]);
     return (
       <div className="github-widget">
         <div className="github-widget-head">
           <div><span className="github-live-dot" /> PUBLIC REPOSITORIES · LIVE FROM GITHUB</div>
-          <a href="https://github.com/ashishfogawat3208-oss" target="_blank" rel="noreferrer">ashishfogawat3208-oss ↗</a>
+          <a href={GITHUB} target="_blank" rel="noreferrer">ashishfogawat3208-oss ↗</a>
         </div>
-        {repoState === "loading" && <p className="github-state">Loading public repositories…</p>}
+        {repoState === "loading" && <p className="github-state">Connecting to GitHub’s public API…</p>}
         {repoState === "error" && <p className="github-state">Live repository details are temporarily unavailable. You can still browse the public profile.</p>}
         {repoState === "ready" && ordered.length === 0 && <p className="github-state">No featured public repositories were returned. Open the profile to browse all repositories.</p>}
+        {repoState === "ready" && <>
+          <div className="github-summary"><div><strong>{ordered.length.toString().padStart(2, "0")}</strong><span>FEATURED PUBLIC REPOS</span></div><div><strong>{languages.length.toString().padStart(2, "0")}</strong><span>LANGUAGES DETECTED</span></div><div><strong>{events.length.toString().padStart(2, "0")}</strong><span>RECENT PUBLIC EVENTS</span></div></div>
+          {languages.length > 0 && <div className="github-language-row"><span>LANGUAGES IN FEATURED REPOS</span><div>{languages.map(([language, count]) => <span key={language}>{language} <b>{count}</b></span>)}</div></div>}
+        </>}
         <div className="repo-grid">
           {ordered.map((repo) => (
             <a className="repo-card" href={repo.html_url} target="_blank" rel="noreferrer" key={repo.name}>
@@ -78,10 +117,14 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
               <strong>{repo.name}</strong>
               <p>{repo.description || "Public project repository by Ashish Kumar."}</p>
               <div className="repo-meta"><span>{repo.language || "Code"}</span><span>★ {repo.stargazers_count}</span><span>⑂ {repo.forks_count}</span></div>
+              <small className="repo-updated">Updated {new Date(repo.updated_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</small>
             </a>
           ))}
         </div>
-        <p className="project-footnote">Repository details come from GitHub’s public API and may be unavailable if its rate limit is reached.</p>
+        {repoState === "ready" && <div className="github-activity"><div className="github-activity-head"><span>RECENT PUBLIC ACTIVITY</span><a href={`${GITHUB}?tab=activity`} target="_blank" rel="noreferrer">Full activity ↗</a></div>
+          {events.length ? events.map((event) => <div className="activity-item" key={event.id}><i /><p>{eventLabel(event.type)} <a href={`https://github.com/${event.repo.name}`} target="_blank" rel="noreferrer">{event.repo.name}</a></p><time dateTime={event.created_at}>{new Date(event.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</time></div>) : <p className="github-state">No recent public events are available. Private activity is not shown by GitHub’s public API.</p>}
+        </div>}
+        <p className="project-footnote">Live public data from GitHub. Activity and repository details may be limited by GitHub API availability; private contributions are not displayed.</p>
       </div>
     );
   }
@@ -91,20 +134,21 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
       const normalized = raw.trim().toLowerCase();
       if (!normalized) return;
       if (normalized === "clear") {
-        setHistory([]);
+        setHistory(["Terminal cleared.", "Type help to see available commands."]);
         setCommand("");
         return;
       }
       if (normalized === "resume") window.open("/Ashish_Kumar_Resume_Updated.pdf", "_blank", "noopener,noreferrer");
-      if (normalized === "github") window.open("https://github.com/ashishfogawat3208-oss", "_blank", "noopener,noreferrer");
+      if (normalized === "github") window.open(GITHUB, "_blank", "noopener,noreferrer");
+      if (normalized === "email") window.location.href = "mailto:ashishfogawat3208@gmail.com";
       if (normalized === "contact") document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
       const output = commands[normalized] || [`Command not found: ${normalized}`, "Type help to see available commands."];
-      setHistory((old) => [...old, `ashish@portfolio:~$ ${raw}`, ...output]);
+      setHistory((old) => [...old, `ashish@portfolio:~$ ${raw}`, ...output].slice(-28));
       setCommand("");
     };
     return (
       <div className="terminal-window">
-        <div className="terminal-bar"><div className="terminal-dots"><i /><i /><i /></div><span>ashish@portfolio — zsh</span><span>INTERACTIVE</span></div>
+        <div className="terminal-bar"><div className="terminal-dots"><i /><i /><i /></div><span>ashish@portfolio — zsh</span><span>SESSION / ONLINE</span></div>
         <div className="terminal-screen" aria-live="polite">
           {history.map((line, index) => <p className={line.startsWith("ashish@") ? "terminal-command" : "terminal-output"} key={`${index}-${line}`}>{line}</p>)}
           <form className="terminal-input-row" onSubmit={(event) => { event.preventDefault(); runCommand(command); }}>
@@ -113,7 +157,7 @@ export default function PortfolioExtras({ github = false, terminal = false }: {
             <button type="submit" aria-label="Run terminal command">↵</button>
           </form>
         </div>
-        <div className="terminal-shortcuts">{["help", "about", "skills", "projects", "experience", "contact", "resume", "github", "whoami", "clear"].map((item) => <button type="button" key={item} onClick={() => runCommand(item)}>{item}</button>)}</div>
+        <div className="terminal-shortcuts">{["help", "whoami", "skills", "projects", "experience", "education", "resume", "github", "contact", "clear"].map((item) => <button type="button" key={item} onClick={() => runCommand(item)}>{item}</button>)}</div>
       </div>
     );
   }

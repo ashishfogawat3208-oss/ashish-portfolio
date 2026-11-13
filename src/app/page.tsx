@@ -2,6 +2,8 @@ import PortfolioExtras from "@/components/PortfolioExtras";
 import RecruiterAssistant from "@/components/RecruiterAssistant";
 import RecruiterMode from "@/components/RecruiterMode";
 import ContactForm from "@/components/ContactForm";
+import PortfolioNav from "@/components/PortfolioNav";
+import SkillsExplorer from "@/components/SkillsExplorer";
 
 const projects = [
   {
@@ -52,15 +54,6 @@ const projects = [
     approach: "Implemented movie and showtime management with interactive seat selection. Integrated Razorpay for payments and refunds, and automated PDF e-ticket generation with QR codes and email delivery.",
     proof: ["Movie and showtime management", "Interactive seat selection", "Payment, QR ticket and email workflow"],
   },
-];
-
-const skills = [
-  ["Programming", "Python", "Java", "JavaScript"],
-  ["Frontend", "React.js", "AngularJS", "HTML", "CSS", "Responsive UI"],
-  ["Backend", "Node.js", "Express.js", "Django", "REST APIs"],
-  ["Databases", "MongoDB", "MySQL", "Supabase"],
-  ["Tools & Integrations", "Git", "GitHub", "VS Code", "Figma", "Razorpay"],
-  ["Data & Analytics", "Power BI", "HR Analytics"],
 ];
 
 const experience = [
@@ -133,23 +126,8 @@ function Architecture({ kind }: { kind: string }) {
 
 export default function Home() {
   return (
-    <main>
-      <nav className="nav">
-        <a className="brand" href="#top" aria-label="Ashish Kumar home">AK<span>.</span></a>
-        <div className="nav-links">
-          <a href="#work">Work</a>
-          <a href="#architecture">Architecture</a>
-          <a href="#about">About</a>
-          <a href="#experience">Experience</a>
-          <a href="#github">GitHub</a>
-          <a href="#recruiter">Recruiters</a>
-          <a href="#assistant">Ask me</a>
-          <a href="#contact">Contact</a>
-        </div>
-        <a className="nav-cta" href="/Ashish_Kumar_Resume_Updated.pdf" target="_blank" rel="noreferrer">
-          Resume <Arrow />
-        </a>
-      </nav>
+    <main id="main-content">
+      <PortfolioNav />
 
       <section className="hero section-wrap" id="top">
         <div className="hero-copy">
@@ -215,11 +193,8 @@ export default function Home() {
         <div className="project-list">
           {projects.map((project) => (
             <article className={`project-card ${project.className}`} key={project.number}>
-              <div className="project-visual">
-                <div className="visual-grid" /><div className="project-monogram">{project.mark}</div>
-                <span className="visual-index">PROJECT / {project.number}</span><span className="visual-orbit" />
-              </div>
               <div className="project-info">
+                <div className="project-card-kicker"><span>PROJECT / {project.number}</span><span>TEXT-BASED CASE STUDY</span></div>
                 <p className="project-type">{project.type}</p><h3>{project.name}</h3>
                 <p className="project-description">{project.description}</p>
                 <div className="tags">{project.stack.map((tag) => <span key={tag}>{tag}</span>)}</div>
@@ -230,7 +205,7 @@ export default function Home() {
             </article>
           ))}
         </div>
-        <p className="project-footnote">Project descriptions are based on the work listed in my resume. Repository links open the public source code.</p>
+        <p className="project-footnote">These are text-first project summaries — no demo screenshots or videos are presented. Repository links open the available public source code.</p>
       </section>
 
       <section className="case-section" id="case-studies">
@@ -313,9 +288,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-wrap skills-section">
-        <div className="section-heading"><div><p className="overline">MY TOOLKIT</p><h2>Skills & <span>technologies.</span></h2></div><p className="section-note">Tools I’ve used across projects, internships and hands-on learning.</p></div>
-        <div className="skills-grid">{skills.map(([group, ...items], i) => <div className="skill-group" key={group}><span className="skill-index">0{i + 1}</span><h3>{group}</h3><div className="skill-tags">{items.map((item) => <span key={item}>{item}</span>)}</div></div>)}</div>
+      <section className="section-wrap skills-section" id="skills">
+        <div className="section-heading"><div><p className="overline">MY TOOLKIT / FILTERABLE INDEX</p><h2>Skills & <span>technologies.</span></h2></div><p className="section-note">Explore the tools I’ve used across projects, internships and hands-on learning. Filter by discipline.</p></div>
+        <SkillsExplorer />
       </section>
 
       <section className="experience-section" id="experience">

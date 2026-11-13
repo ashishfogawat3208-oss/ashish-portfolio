@@ -4,7 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Ashish Kumar | Full-Stack Developer",
   description:
-    "Ashish Kumar’s developer portfolio: frontend and full-stack projects, technical skills, internship experience, GitHub repositories and contact details.",
+    "Explore Ashish Kumar’s text-first developer portfolio: full-stack projects, technical skills, internship experience, public GitHub work and contact details.",
+  keywords: ["Ashish Kumar", "Full-stack developer", "Frontend developer", "React", "Next.js", "Node.js", "Python", "Django", "Portfolio"],
+  authors: [{ name: "Ashish Kumar", url: "https://github.com/ashishfogawat3208-oss" }],
+  creator: "Ashish Kumar",
+  category: "technology",
   openGraph: {
     title: "Ashish Kumar | Full-Stack Developer",
     description: "Explore Ashish Kumar’s projects, skills, experience and developer profile.",

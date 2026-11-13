@@ -83,3 +83,18 @@ For a first test, Resend may allow its `onboarding@resend.dev` sender only to yo
 
 ### Social preview URL
 Update `metadataBase` in `src/app/layout.tsx` to the final deployed portfolio URL before publishing, so social preview metadata uses the correct canonical origin.
+
+
+## Ashish 4.0 update
+
+- Futuristic midnight-indigo styling with subtle cyan/violet accents.
+- Text-first project cards and case studies. No fabricated project screenshots, demo previews, or videos.
+- Filterable skills explorer.
+- Responsive mobile navigation and reading progress indicator.
+- GitHub section with public repository metadata, detected languages, and recent public events when GitHub's API is available.
+- Expanded interactive terminal commands for profile, skills, projects, experience, education, resume, GitHub, and contact.
+- Refined focus states, reduced-motion handling, and responsive layouts.
+
+### Environment variables
+
+Copy `.env.example` to `.env.local` and enter your own server-side keys. Never commit `.env.local`. On Vercel, update the same variables under Project Settings → Environment Variables and redeploy.
